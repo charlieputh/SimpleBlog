@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+//namespace App\Http\Controllers;
+use App\Http\Requests\ArticleRequest;
 use App\Article;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -9,7 +11,7 @@ class ArticlesControllers extends Controller
 {
     //
     public function index(){
-        $articles = Article::all();
+        $articles = Article::latest()->get();
         //return 'articles';
         return view('articles.index')->with('articles',$articles);
     }
@@ -27,14 +29,22 @@ class ArticlesControllers extends Controller
         return view('articles.create');
     }
 
-    public function store(Request $request){
+    public function store(ArticleRequest $request){
         //dd($request->all());
         //接受post过来的数据
         //存入数据库
         //重定向
         $input=$request->all();
-        $input['published_at']=Carbon::now();
+
+       // $input['published_at']=Carbon::now();
         Article::create($input);
         return redirect('/articles');
+
+    }
+
+    public function edit($id)
+    {
+        $article = Article::findOrFail($id);
+        return view('articles.edit', compact('article'));
     }
 }
